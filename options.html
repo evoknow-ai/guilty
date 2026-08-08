@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Guilty Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <main>
+    <header><h1>GUILTY<span>.</span></h1><p>Decide what counts—and what you call it.</p></header>
+
+    <section class="settings">
+      <label><input id="enabled" type="checkbox"> Tracking enabled</label>
+      <label><input id="uncategorized" type="checkbox"> Track uncategorized websites</label>
+      <label>Stop counting after
+        <select id="idle">
+          <option value="30">30 seconds</option>
+          <option value="60">1 minute</option>
+          <option value="120">2 minutes</option>
+          <option value="300">5 minutes</option>
+        </select> without activity
+      </label>
+    </section>
+
+    <div class="title"><h2>Categories</h2><button id="add">+ Add category</button></div>
+    <div id="rules"></div>
+
+    <footer>
+      <button id="reset" class="danger">Erase tracking history</button>
+      <div class="actions">
+        <button id="backup">Back up settings</button>
+        <button id="restore">Restore settings</button>
+        <input id="restoreFile" type="file" accept="application/json,.json" hidden>
+        <button id="save" class="primary">Save changes</button>
+      </div>
+    </footer>
+    <div id="status"></div>
+  </main>
+  <script src="options.js"></script>
+</body>
+</html>

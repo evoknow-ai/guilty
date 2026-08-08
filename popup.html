@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Guilty</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>GUILTY<span>.</span></h1>
+        <p>Your attention, accounted for.</p>
+      </div>
+      <button id="settings" class="icon" title="Settings">⚙</button>
+    </header>
+
+    <section class="hero">
+      <div class="eyebrow"><span id="reportTitle">TODAY</span><span class="live"><i></i> TRACKING</span></div>
+      <strong id="total">0m</strong>
+      <small>active browser time</small>
+    </section>
+
+    <div class="ranges" id="ranges">
+      <button class="active" data-range="today">Today</button>
+      <button data-range="week">This Week</button>
+      <button data-range="lastWeek">Last Week</button>
+      <button data-range="month">This Month</button>
+      <button data-range="year">This Year</button>
+    </div>
+
+    <div class="drill"><button id="back" hidden>← All categories</button><span id="context">Categories</span></div>
+    <div id="compareKey" class="compare-key" hidden><span><i></i>This week</span><span><i></i>Last week</span></div>
+    <section id="report"><div class="empty">No guilt yet.</div></section>
+    <section><div id="chart" class="chart"></div></section>
+
+    <footer>
+      <span id="allTime">All time: 0m</span>
+      <div><button id="credits">Credits</button><button id="export">Export</button><button id="share">Share PNG</button></div>
+    </footer>
+    <div id="shareMenu" class="share-menu" hidden>
+      <b>PNG copied. Open:</b>
+      <button data-social="x">X</button><button data-social="facebook">Facebook</button>
+      <button data-social="linkedin">LinkedIn</button><button data-social="reddit">Reddit</button>
+      <small>Paste the image into your post.</small>
+    </div>
+  </main>
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+:root { color-scheme: dark; --red: #ff3b30; --muted: #707070; }
+* { box-sizing: border-box; }
+html {
+  width: 430px;
+  min-width: 430px;
+  max-width: 430px;
+  overflow-x: hidden;
+  background: #080808;
+}
+body {
+  margin: 0; width: 430px; min-width: 430px; max-width: 430px; min-height: 590px;
+  overflow-x: hidden; background: #080808; color: #f4f4f4;
+  font: 14px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+main { padding: 22px; }
+header { display: flex; justify-content: space-between; align-items: center; }
+h1 { font-size: 20px; letter-spacing: .16em; margin: 0; }
+h1 span { color: var(--red); }
+header p { color: #666; font-size: 11px; margin: 2px 0 0; }
+button { font: inherit; cursor: pointer; }
+.icon { border: 0; background: transparent; color: #777; font-size: 18px; }
+.hero { padding: 28px 0 22px; }
+.eyebrow { display: flex; justify-content: space-between; color: #666; font-size: 10px; font-weight: 700; letter-spacing: .15em; }
+.live { display: flex; align-items: center; gap: 5px; }
+.live i { width: 6px; height: 6px; background: var(--red); border-radius: 50%; box-shadow: 0 0 8px var(--red); }
+.hero strong { display: block; font-size: 60px; line-height: 1; letter-spacing: -.055em; margin-top: 7px; }
+.hero small { color: #555; }
+.ranges { display: flex; gap: 4px; padding: 4px; background: #111; border-radius: 9px; }
+.ranges button { flex: 1; border: 0; border-radius: 6px; background: transparent; color: #666; padding: 7px 3px; font-size: 9px; }
+.ranges button.active { background: #272727; color: #fff; }
+.drill { display: flex; justify-content: space-between; align-items: center; color: #666; font-size: 10px; padding-top: 13px; }
+.drill button { border: 0; background: none; color: #aaa; font-size: 10px; padding: 0; }
+.compare-key { display: flex; gap: 14px; color: #666; font-size: 9px; padding: 7px 2px 0; }
+.compare-key span { display: flex; align-items: center; gap: 5px; }
+.compare-key i { width: 12px; height: 3px; border-radius: 2px; background: var(--red); }
+.compare-key span:last-child i { background: #ff8a83; }
+#report { min-height: 175px; }
+.row { display: grid; grid-template-columns: 1fr auto; gap: 9px; padding: 10px 2px; border-bottom: 1px solid #1d1d1d; cursor: pointer; }
+.row:hover .name { color: var(--red); }
+.row .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.row .meta { color: #5f5f5f; font-size: 10px; margin-top: 2px; }
+.row b { font-size: 12px; }
+.category-picker {
+  width: 142px; margin-top: 5px; padding: 4px 22px 4px 7px;
+  border: 1px solid #303030; border-radius: 5px; background: #151515;
+  color: #aaa; font: inherit; font-size: 10px; line-height: 1.2; cursor: pointer;
+}
+.category-picker:hover, .category-picker:focus { border-color: #555; color: #fff; outline: none; }
+.progress { grid-column: 1 / -1; height: 3px; background: #181818; border-radius: 3px; overflow: hidden; }
+.progress i { display: block; height: 100%; background: var(--red); border-radius: 3px; }
+.comparison { grid-column: 1 / -1; display: grid; gap: 4px; }
+.comparison-line { display: grid; grid-template-columns: 28px 1fr 40px; align-items: center; gap: 6px; }
+.comparison-line small { color: #555; font-size: 8px; text-transform: uppercase; }
+.comparison-line b { color: #777; font-size: 9px; text-align: right; font-weight: 500; }
+.comparison-line .progress { grid-column: auto; }
+.empty { color: #444; text-align: center; padding: 75px 0; }
+.chart { height: 125px; display: flex; align-items: end; gap: 4px; padding: 12px 2px 0; overflow: hidden; }
+.day { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: end; align-items: center; gap: 7px; }
+.bar-wrap { width: 100%; height: 82px; display: flex; align-items: end; }
+.bar { width: 100%; min-height: 3px; background: #282828; border-radius: 4px 4px 1px 1px; }
+.day.today .bar { background: var(--red); }
+.day label { color: #555; font-size: 10px; }
+.day b { color: #888; font-size: 9px; font-weight: 500; }
+footer { border-top: 1px solid #202020; margin-top: 10px; padding-top: 14px; color: #555; font-size: 10px; display: flex; justify-content: space-between; }
+footer button { border: 0; background: none; color: #777; font-size: 10px; }
+.share-menu { position: fixed; left: 18px; right: 18px; bottom: 16px; background: #181818; border: 1px solid #333; border-radius: 10px; padding: 12px; box-shadow: 0 12px 30px #000; }
+.share-menu b, .share-menu small { display: block; color: #aaa; font-size: 10px; margin-bottom: 7px; }
+.share-menu small { margin: 7px 0 0; color: #666; }
+.share-menu button { background: #2a2a2a; border: 0; color: #fff; border-radius: 5px; margin-right: 5px; padding: 6px 9px; font-size: 10px; }

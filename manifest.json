@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "Guilty",
+  "version": "3.6.0",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqdNZMNTpkwaoMajO6YorPfw4bKNf1DzBEugvPOvp5OwPcg1gen+A9ZDtY5iuGQdTpxU8o6i14WiO0s5p6SitF3mNOqHye1ZqC/O39XYm8zSr888S4hjFC4mTB3M9wlK6YS95mhRnr3We7/fPx2YPivbN/Uyw4/LEvQf/0kDuWjDpYXxcTGywyC7jTqvX5RJyb5V0rnhwDCERdmx38KmFReYPOUnIPgJH170KrgVdRSl9+3rxfzc1RuvlT4QBJvYaMwZq0I8pC2K9/IEDdqpdVbUx+SJf/6bDmE7KW/N4qxBUeMS8ykmlSSO0/6KVRAx143GKnFzwOYBCBHEkatAFrwIDAQAB",
+  "description": "See where your attention goes. Private, local-only website time tracking by category.",
+  "permissions": ["storage", "clipboardWrite"],
+  "host_permissions": ["<all_urls>"],
+  "action": {
+    "default_title": "Guilty",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "32": "icon32.png"
+    }
+  },
+  "icons": {
+    "16": "icon16.png",
+    "32": "icon32.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["tracker.js"],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ],
+  "options_page": "options.html"
+}
