@@ -12,4 +12,7 @@ h1 span { color: var(--red); }
 section { padding: 26px 0; border-top: 1px solid #222; border-bottom: 1px solid #222; }
 section p { margin: 5px 0; font-size: 20px; }
 section p:last-child { color: #888; }
+nav { display: flex; gap: 16px; margin: 5px 0 18px; }
+nav a { color: var(--red); font-size: 13px; text-decoration: none; }
+nav a:hover { text-decoration: underline; }
 .privacy { margin-top: 22px; color: #555; font-size: 12px; }

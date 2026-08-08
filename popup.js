@@ -2,7 +2,7 @@ const RANGE_LABELS = {
   today: "Today", week: "This Week", lastWeek: "Last Week",
   month: "This Month", year: "This Year"
 };
-let state = { range: "today", filter: null, stats: null, categories: [], categoryColors: {} };
+let state = { range: "today", filter: null, stats: null, categories: [], categoryColors: {}, categoryComparisonColors: {} };
 
 const format = seconds => {
   const mins = Math.floor(seconds / 60);
@@ -35,10 +35,11 @@ function rows(items, type) {
         </select>`
       : "";
     const color = state.categoryColors[item.name] || "#ff3b30";
+    const comparisonColor = state.categoryComparisonColors[item.name] || lighterShade(color);
     const comparison = type === "category" && item.previousSeconds !== null
       ? `<div class="comparison">
           <div class="comparison-line"><small>Now</small><div class="progress"><i style="width:${item.seconds / max * 100}%;background:${color}"></i></div><b>${format(item.seconds)}</b></div>
-          <div class="comparison-line"><small>Last</small><div class="progress"><i style="width:${item.previousSeconds / max * 100}%;background:${lighterShade(color)}"></i></div><b>${format(item.previousSeconds)}</b></div>
+          <div class="comparison-line"><small>Last</small><div class="progress"><i style="width:${item.previousSeconds / max * 100}%;background:${comparisonColor}"></i></div><b>${format(item.previousSeconds)}</b></div>
         </div>`
       : `<div class="progress"><i style="width:${item.seconds / max * 100}%;background:${color}"></i></div>`;
     return `<div class="row" data-type="${type}" data-value="${escapeHtml(label)}">
@@ -70,6 +71,7 @@ async function render() {
   state.stats = stats;
   state.categories = Object.keys(config.rules).filter(name => name !== "Uncategorized");
   state.categoryColors = config.categoryColors;
+  state.categoryComparisonColors = config.categoryComparisonColors;
   const title = state.filter ? state.filter.value : RANGE_LABELS[state.range];
   document.querySelector("#reportTitle").textContent = title.toUpperCase();
   document.querySelector("#total").textContent = format(stats.total);
@@ -148,27 +150,51 @@ document.querySelector("#export").addEventListener("click", async () => {
 });
 
 function reportPng() {
+  const list = state.filter?.type === "category" ? state.stats.sites
+    : state.filter?.type === "site" ? [{ domain: state.filter.value, seconds: state.stats.total }]
+    : state.stats.categories;
+  const comparing = state.range === "week" && !state.filter;
+  const rowHeight = comparing ? 78 : 54;
+  const chartHeight = 150;
+  const height = Math.max(675, 330 + list.length * rowHeight + chartHeight);
   const canvas = document.createElement("canvas");
-  canvas.width = 1200; canvas.height = 675;
+  canvas.width = 1200; canvas.height = height;
   const ctx = canvas.getContext("2d");
-  ctx.fillStyle = "#080808"; ctx.fillRect(0, 0, 1200, 675);
+  ctx.fillStyle = "#080808"; ctx.fillRect(0, 0, 1200, height);
   ctx.fillStyle = "#fff"; ctx.font = "bold 42px sans-serif"; ctx.fillText("GUILTY", 70, 75);
   ctx.fillStyle = "#ff3b30"; ctx.fillText(".", 225, 75);
   ctx.fillStyle = "#777"; ctx.font = "24px sans-serif";
   ctx.fillText(`${RANGE_LABELS[state.range]}${state.filter ? ` · ${state.filter.value}` : ""}`, 70, 125);
   ctx.fillStyle = "#fff"; ctx.font = "bold 100px sans-serif"; ctx.fillText(format(state.stats.total), 70, 245);
-  const list = state.filter?.type === "category" ? state.stats.sites : state.stats.categories;
-  const max = list[0]?.seconds || 1;
-  list.slice(0, 7).forEach((item, index) => {
-    const y = 320 + index * 43;
+  const max = Math.max(...list.flatMap(item => [item.seconds || 0, item.previousSeconds || 0]), 1);
+  list.forEach((item, index) => {
+    const y = 315 + index * rowHeight;
     const label = item.domain || item.name;
-    ctx.fillStyle = "#ddd"; ctx.font = "22px sans-serif"; ctx.fillText(label, 70, y);
+    ctx.fillStyle = "#ddd"; ctx.font = "22px sans-serif"; ctx.fillText(label.slice(0, 35), 70, y);
     ctx.fillStyle = "#777"; ctx.textAlign = "right"; ctx.fillText(format(item.seconds), 1110, y);
-    ctx.textAlign = "left"; ctx.fillStyle = "#242424"; ctx.fillRect(390, y - 18, 580, 12);
-    ctx.fillStyle = "#ff3b30"; ctx.fillRect(390, y - 18, 580 * item.seconds / max, 12);
+    ctx.textAlign = "left";
+    const color = state.categoryColors[item.name] || "#ff3b30";
+    ctx.fillStyle = "#242424"; ctx.fillRect(390, y - 17, 580, 10);
+    ctx.fillStyle = color; ctx.fillRect(390, y - 17, 580 * item.seconds / max, 10);
+    if (comparing) {
+      ctx.fillStyle = "#666"; ctx.font = "15px sans-serif"; ctx.fillText("LAST", 70, y + 29);
+      ctx.fillStyle = "#242424"; ctx.fillRect(390, y + 15, 580, 10);
+      ctx.fillStyle = state.categoryComparisonColors[item.name] || lighterShade(color);
+      ctx.fillRect(390, y + 15, 580 * (item.previousSeconds || 0) / max, 10);
+      ctx.fillStyle = "#777"; ctx.textAlign = "right"; ctx.fillText(format(item.previousSeconds || 0), 1110, y + 29); ctx.textAlign = "left";
+    }
+  });
+  const chartTop = 340 + list.length * rowHeight;
+  const dayMax = Math.max(...state.stats.days.map(day => day.seconds), 60);
+  const barWidth = Math.max(8, Math.min(54, 960 / Math.max(state.stats.days.length, 1) - 8));
+  state.stats.days.forEach((day, index) => {
+    const x = 70 + index * ((1060 - 70) / Math.max(state.stats.days.length, 1));
+    const barHeight = Math.max(3, day.seconds / dayMax * 90);
+    ctx.fillStyle = index === state.stats.days.length - 1 ? "#ff3b30" : "#282828";
+    ctx.fillRect(x, chartTop + 95 - barHeight, barWidth, barHeight);
   });
   ctx.fillStyle = "#555"; ctx.font = "18px sans-serif";
-  ctx.fillText("Your attention, accounted for.", 70, 635);
+  ctx.fillText("Your attention, accounted for.", 70, height - 35);
   return canvas;
 }
 

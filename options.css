@@ -14,9 +14,14 @@ button { border: 0; background: transparent; color: #888; cursor: pointer; paddi
 button:hover { color: #fff; }
 .card { background: #101010; border: 1px solid #222; border-radius: 10px; padding: 16px; margin: 10px 0; }
 .card-head { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.card:not(.expanded) .card-head { margin-bottom: 0; }
+.card-body { display: none; }
+.card.expanded .card-body { display: block; }
+.card-toggle { color: #777; font-size: 22px; line-height: 1; padding: 2px 5px; transition: transform .15s ease; }
+.card.expanded .card-toggle { transform: rotate(90deg); }
 .color-label { margin-left: auto; display: flex; align-items: center; gap: 8px; color: #777; font-size: 11px; }
 .category-color { width: 32px; height: 25px; padding: 0; border: 0; background: transparent; cursor: pointer; }
-.category { width: 260px; background: transparent; border: 0; border-bottom: 1px solid #333; color: #fff; font-size: 16px; font-weight: 600; padding: 4px; }
+.category { min-width: 160px; flex: 1; background: transparent; border: 0; border-bottom: 1px solid #333; color: #fff; font-size: 16px; font-weight: 600; padding: 4px; }
 textarea { width: 100%; min-height: 68px; resize: vertical; background: #090909; color: #aaa; border: 1px solid #272727; border-radius: 6px; padding: 9px; font: 12px/1.5 ui-monospace, monospace; }
 .hint { color: #555; font-size: 11px; margin: 5px 0 0; }
 footer { display: flex; justify-content: space-between; border-top: 1px solid #222; padding-top: 22px; margin-top: 24px; }

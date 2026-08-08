@@ -1,19 +1,39 @@
 const rulesEl = document.querySelector("#rules");
 const statusEl = document.querySelector("#status");
 
-function addCard(name = "", domains = [], color = "#ff3b30") {
+function addCard(name = "", domains = [], color = "#ff3b30", comparisonColor = "#ff8a83", expanded = false) {
   const card = document.createElement("div");
-  card.className = "card";
+  card.className = `card${expanded ? " expanded" : ""}`;
   card.innerHTML = `
     <div class="card-head">
+      <button class="card-toggle" type="button" aria-expanded="${expanded}" title="Open category">›</button>
       <input class="category" value="${escapeHtml(name)}" placeholder="Category name">
       <label class="color-label">Chart color <input class="category-color" type="color" value="${escapeHtml(color)}"></label>
+      <label class="color-label">Last week <input class="comparison-color" type="color" value="${escapeHtml(comparisonColor)}"></label>
       <button class="remove">Remove</button>
     </div>
-    <textarea placeholder="example.com, *google.com, *.evoknow.io">${escapeHtml(domains.join(", "))}</textarea>
-    <p class="hint">Comma-separated domains or wildcards. Examples: *google.com, *.evoknow.io. More-specific rules win.</p>`;
+    <div class="card-body">
+      <textarea placeholder="example.com, *google.com, *.evoknow.io">${escapeHtml(domains.join(", "))}</textarea>
+      <p class="hint">Comma-separated domains or wildcards. Examples: *google.com, *.evoknow.io. More-specific rules win.</p>
+    </div>`;
+  card.querySelector(".card-toggle").addEventListener("click", () => setExpanded(card, !card.classList.contains("expanded")));
   card.querySelector(".remove").addEventListener("click", () => card.remove());
   rulesEl.appendChild(card);
+  updateToggleAll();
+}
+
+function setExpanded(card, expanded) {
+  card.classList.toggle("expanded", expanded);
+  const toggle = card.querySelector(".card-toggle");
+  toggle.setAttribute("aria-expanded", String(expanded));
+  toggle.title = expanded ? "Fold category" : "Open category";
+  updateToggleAll();
+}
+
+function updateToggleAll() {
+  const cards = [...document.querySelectorAll(".card")];
+  const allOpen = cards.length > 0 && cards.every(card => card.classList.contains("expanded"));
+  document.querySelector("#toggleAll").textContent = allOpen ? "Fold all" : "Open all";
 }
 
 function escapeHtml(value) {
@@ -23,24 +43,31 @@ function escapeHtml(value) {
 }
 
 async function load() {
-  const { rules, settings, categoryColors } = await chrome.runtime.sendMessage({ type: "GET_CONFIG" });
+  const { rules, settings, categoryColors, categoryComparisonColors } = await chrome.runtime.sendMessage({ type: "GET_CONFIG" });
   rulesEl.innerHTML = "";
   document.querySelector("#enabled").checked = settings.enabled;
   document.querySelector("#uncategorized").checked = settings.trackUncategorized;
   document.querySelector("#idle").value = String(settings.idleSeconds);
-  Object.entries(rules).forEach(([name, domains]) => addCard(name, domains, categoryColors[name]));
+  Object.entries(rules).forEach(([name, domains]) => addCard(name, domains, categoryColors[name], categoryComparisonColors[name]));
 }
 
-document.querySelector("#add").addEventListener("click", () => addCard());
+document.querySelector("#add").addEventListener("click", () => addCard("", [], "#ff3b30", "#ff8a83", true));
+document.querySelector("#toggleAll").addEventListener("click", () => {
+  const cards = [...document.querySelectorAll(".card")];
+  const expand = !cards.every(card => card.classList.contains("expanded"));
+  cards.forEach(card => setExpanded(card, expand));
+});
 document.querySelector("#save").addEventListener("click", async () => {
   const rules = {};
   const categoryColors = {};
+  const categoryComparisonColors = {};
   document.querySelectorAll(".card").forEach(card => {
     const name = card.querySelector(".category").value.trim();
     const domains = card.querySelector("textarea").value.split(",").map(v => v.trim()).filter(Boolean);
     if (name) {
       rules[name] = domains;
       categoryColors[name] = card.querySelector(".category-color").value;
+      categoryComparisonColors[name] = card.querySelector(".comparison-color").value;
     }
   });
   const settings = {
@@ -48,7 +75,7 @@ document.querySelector("#save").addEventListener("click", async () => {
     trackUncategorized: document.querySelector("#uncategorized").checked,
     idleSeconds: Number(document.querySelector("#idle").value)
   };
-  await chrome.runtime.sendMessage({ type: "SAVE_CONFIG", rules, settings, categoryColors });
+  await chrome.runtime.sendMessage({ type: "SAVE_CONFIG", rules, settings, categoryColors, categoryComparisonColors });
   statusEl.textContent = "Saved locally.";
   setTimeout(() => statusEl.textContent = "", 1500);
 });

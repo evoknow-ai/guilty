@@ -34,7 +34,7 @@ const DEFAULT_CATEGORY_COLOR = "#ff3b30";
 let lastPing = { time: 0, domain: "" };
 
 async function ensureDefaults() {
-  const current = await chrome.storage.local.get(["rules", "settings", "categoryColors"]);
+  const current = await chrome.storage.local.get(["rules", "settings", "categoryColors", "categoryComparisonColors"]);
   if (!current.rules) {
     await chrome.storage.local.set({ rules: DEFAULT_RULES });
   } else {
@@ -59,6 +59,21 @@ async function ensureDefaults() {
         .map(category => [category, DEFAULT_CATEGORY_COLOR]))
     });
   }
+  if (!current.categoryComparisonColors) {
+    const colors = current.categoryColors || {};
+    await chrome.storage.local.set({
+      categoryComparisonColors: Object.fromEntries(Object.keys(current.rules || DEFAULT_RULES)
+        .map(category => [category, lighterDefault(colors[category] || DEFAULT_CATEGORY_COLOR)]))
+    });
+  }
+}
+
+function lighterDefault(hex) {
+  const value = hex.replace("#", "");
+  return `#${[0, 2, 4].map(offset => {
+    const channel = parseInt(value.slice(offset, offset + 2), 16);
+    return Math.round(channel + (255 - channel) * .45).toString(16).padStart(2, "0");
+  }).join("")}`;
 }
 
 chrome.runtime.onInstalled.addListener(ensureDefaults);
@@ -69,7 +84,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     ACTIVE_PING: () => recordPing(message.domain),
     GET_STATS: () => getStats(message.range || "today", message.filter || null),
     GET_CONFIG: () => getConfig(),
-    SAVE_CONFIG: () => saveConfig(message.rules, message.settings, message.categoryColors),
+    SAVE_CONFIG: () => saveConfig(message.rules, message.settings, message.categoryColors, message.categoryComparisonColors),
     ASSIGN_DOMAIN: () => assignDomain(message.domain, message.category),
     IMPORT_CONFIG: () => importConfig(message.config),
     RESET_STATS: () => resetStats(),
@@ -156,18 +171,21 @@ async function recordPing(rawDomain) {
 }
 
 async function getConfig() {
-  const { rules = DEFAULT_RULES, settings = {}, categoryColors = {} } =
-    await chrome.storage.local.get(["rules", "settings", "categoryColors"]);
+  const { rules = DEFAULT_RULES, settings = {}, categoryColors = {}, categoryComparisonColors = {} } =
+    await chrome.storage.local.get(["rules", "settings", "categoryColors", "categoryComparisonColors"]);
   return {
     rules,
     categoryColors: Object.fromEntries(Object.keys(rules).map(category => [
       category, categoryColors[category] || DEFAULT_CATEGORY_COLOR
     ])),
+    categoryComparisonColors: Object.fromEntries(Object.keys(rules).map(category => [
+      category, categoryComparisonColors[category] || lighterDefault(categoryColors[category] || DEFAULT_CATEGORY_COLOR)
+    ])),
     settings: { enabled: true, trackUncategorized: true, idleSeconds: 60, ...settings }
   };
 }
 
-async function saveConfig(rules, settings, categoryColors = {}) {
+async function saveConfig(rules, settings, categoryColors = {}, categoryComparisonColors = {}) {
   const cleaned = {};
   for (const [category, domains] of Object.entries(rules || {})) {
     const name = category.trim();
@@ -180,7 +198,13 @@ async function saveConfig(rules, settings, categoryColors = {}) {
       ? categoryColors[category]
       : DEFAULT_CATEGORY_COLOR
   ]));
-  await chrome.storage.local.set({ rules: cleaned, settings, categoryColors: cleanedColors });
+  const cleanedComparisonColors = Object.fromEntries(Object.keys(cleaned).map(category => [
+    category,
+    /^#[0-9a-f]{6}$/i.test(categoryComparisonColors[category] || "")
+      ? categoryComparisonColors[category]
+      : lighterDefault(cleanedColors[category])
+  ]));
+  await chrome.storage.local.set({ rules: cleaned, settings, categoryColors: cleanedColors, categoryComparisonColors: cleanedComparisonColors });
   return { ok: true };
 }
 
@@ -204,7 +228,7 @@ async function importConfig(config) {
   if (!config || typeof config !== "object" || !config.rules || !config.settings) {
     throw new Error("Invalid Guilty settings file.");
   }
-  return saveConfig(config.rules, config.settings, config.categoryColors);
+  return saveConfig(config.rules, config.settings, config.categoryColors, config.categoryComparisonColors);
 }
 
 function dateAtStart(date) {
@@ -310,6 +334,6 @@ async function resetStats() {
 }
 
 async function exportData() {
-  const data = await chrome.storage.local.get(["activity", "rules", "settings", "categoryColors"]);
+  const data = await chrome.storage.local.get(["activity", "rules", "settings", "categoryColors", "categoryComparisonColors"]);
   return { ...data, exportedAt: new Date().toISOString() };
 }
