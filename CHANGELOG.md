@@ -2,7 +2,7 @@
 
 All notable changes to Guilty are documented in this file.
 
-## [3.7.0] - 2026-08-08
+## [3.7.0](https://github.com/evoknow-ai/guilty/releases/tag/v3.7.0) - 2026-08-08
 
 ### Added
 
@@ -17,7 +17,7 @@ All notable changes to Guilty are documented in this file.
 - Share images now resize dynamically to capture the complete report, including all visible categories, sites, and weekly comparison bars.
 - Updated the credit to "Imagined By: Mohammed Kabir."
 
-## [3.6.0] - 2026-08-08
+## [3.6.0](https://github.com/evoknow-ai/guilty/releases/tag/v3.6.0) - 2026-08-08
 
 ### Added
 

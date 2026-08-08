@@ -1,0 +1,39 @@
+name: Validate and package
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check JavaScript syntax
+        run: |
+          node --check background.js
+          node --check tracker.js
+          node --check popup.js
+          node --check options.js
+      - name: Validate manifest
+        run: node -e "const m=require('./manifest.json'); if(m.manifest_version!==3||!m.version) process.exit(1)"
+      - name: Package extension
+        run: |
+          mkdir package
+          cp background.js tracker.js popup.js options.js package/
+          cp popup.html popup.css options.html options.css credits.html credits.css package/
+          cp manifest.json icon.svg icon16.png icon32.png icon48.png icon128.png LICENSE package/
+          cd package
+          zip -r ../guilty.zip .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: guilty-extension
+          path: guilty.zip

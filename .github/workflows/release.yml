@@ -1,0 +1,39 @@
+name: Publish release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Verify tag matches manifest version
+        run: |
+          VERSION=$(node -p "require('./manifest.json').version")
+          test "v$VERSION" = "${GITHUB_REF_NAME}"
+      - name: Validate JavaScript
+        run: |
+          node --check background.js
+          node --check tracker.js
+          node --check popup.js
+          node --check options.js
+      - name: Package extension
+        run: |
+          mkdir package
+          cp background.js tracker.js popup.js options.js package/
+          cp popup.html popup.css options.html options.css credits.html credits.css package/
+          cp manifest.json icon.svg icon16.png icon32.png icon48.png icon128.png LICENSE package/
+          cd package
+          zip -r ../guilty.zip .
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" guilty.zip --generate-notes --title "Guilty ${GITHUB_REF_NAME#v}"
