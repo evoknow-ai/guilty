@@ -2,6 +2,18 @@
 
 All notable changes to Guilty are documented in this file.
 
+## [3.8.0](https://github.com/evoknow-ai/guilty/releases/tag/v3.8.0) - 2026-08-18
+
+### Added
+
+- In-extension privacy disclosure and full public privacy policy.
+- Chrome Web Store submission package and listing assets.
+
+### Changed
+
+- Removed the development-only manifest key from the distributable package.
+- Prepared the release manifest and packaging workflow for Chrome Web Store review.
+
 ## [3.7.0](https://github.com/evoknow-ai/guilty/releases/tag/v3.7.0) - 2026-08-08
 
 ### Added

@@ -8,7 +8,7 @@
 
 A private, local-only Chrome extension that shows where your active browsing time goes.
 
-[![Version](https://img.shields.io/badge/version-3.7.0-ff3b38)](https://github.com/evoknow-ai/guilty/releases)
+[![Version](https://img.shields.io/badge/version-3.8.0-ff3b38)](https://github.com/evoknow-ai/guilty/releases)
 [![Chrome MV3](https://img.shields.io/badge/Chrome-Manifest%20V3-4285F4?logo=googlechrome&logoColor=white)](manifest.json)
 [![MIT License](https://img.shields.io/badge/license-MIT-22c55e)](LICENSE)
 [![Privacy](https://img.shields.io/badge/privacy-local--only-8b5cf6)](#privacy-by-design)
@@ -51,7 +51,7 @@ This means a broad rule such as `*google.com` can coexist with a more specific r
 
 ## Install in Chrome
 
-Guilty is not published in the Chrome Web Store. Install it locally:
+Until the Chrome Web Store listing is approved, install Guilty locally:
 
 1. Download the ZIP from the [latest release](https://github.com/evoknow-ai/guilty/releases/latest).
 2. Unzip it to a permanent folder on your computer.
@@ -77,6 +77,7 @@ The extension requests access to web pages so it can identify the active domain 
 ## Project
 
 - Read the [changelog](CHANGELOG.md)
+- Read the [privacy policy](PRIVACY.md)
 - Review the [security policy](SECURITY.md)
 - See how to [contribute](CONTRIBUTING.md)
 - Report a [bug](https://github.com/evoknow-ai/guilty/issues/new?template=bug_report.yml) or suggest a [feature](https://github.com/evoknow-ai/guilty/issues/new?template=feature_request.yml)

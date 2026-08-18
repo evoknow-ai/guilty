@@ -29,7 +29,7 @@ jobs:
         run: |
           mkdir package
           cp background.js tracker.js popup.js options.js package/
-          cp popup.html popup.css options.html options.css credits.html credits.css package/
+          cp popup.html popup.css options.html options.css credits.html credits.css privacy.html package/
           cp manifest.json icon.svg icon16.png icon32.png icon48.png icon128.png LICENSE package/
           cd package
           zip -r ../guilty.zip .
